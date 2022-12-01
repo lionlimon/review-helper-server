@@ -12,7 +12,7 @@ const notion = new Notion(process.env.SECRET_TOKEN);
 
 class Problem {
 	/**
-	 * Get list of problems
+	 * Список проблем студентов
 	 *
 	 * @param {string[]} tags
 	 * @param {string | null} title
@@ -24,6 +24,8 @@ class Problem {
 			title,
 			databaseId: process.env.PROBLEMS_DATABASE_ID,
 		});
+
+
 
 		return this._formatListResult(results);
 	}
@@ -37,8 +39,8 @@ class Problem {
 			title: problem.properties.title.title[0].text.content,
 			id: problem.id,
 			tags: problem.properties.Tags.multi_select.map((tag) => tag.name),
-			text: problem.properties.text
-				.rich_text.map((item) => item.plain_text).join(''),
+			text: Notion.contentToHtml(problem.properties.text
+				.rich_text),
 		}));
 	}
 }
