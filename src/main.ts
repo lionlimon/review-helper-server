@@ -1,8 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const ProblemController = require("./controllers/ProblemController")
+import express from 'express';
+import cors from 'cors';
 
-require('dotenv').config();
+import { config } from 'dotenv';
+import ProblemController from './controllers/ProblemController';
+
+config();
 
 const PORT = 8080;
 const HOST = '0.0.0.0';
@@ -16,7 +18,6 @@ app.use(cors());
 app.get(`${API_PREFIX}/problems/`, ProblemController.getProblems);
 
 app.listen(process.env.PORT ?? PORT, HOST, () => {
-	console.log(`Running on http://${HOST}:${PORT}`);
+  // eslint-disable-next-line no-console
+  console.log(`Running on http://${HOST}:${PORT}`);
 });
-
-
