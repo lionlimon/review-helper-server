@@ -32,11 +32,19 @@ export default class Problem {
   * Список проблем студентов
   */
   static async list({ tags = [], title = '' }: ProblemListParams = {}) {
-    const { results } = await notion.getDatabase({
-      tags,
-      title,
-      databaseId: process.env.PROBLEMS_DATABASE_ID,
-    });
+    const problems = notion.getDatabase(process.env.PROBLEMS_DATABASE_ID)
+      .wherePropertyIsNotEmpty('title', 'title')
+      .wherePropertyIsNotEmpty('text', 'rich_text');
+
+    if (title) { // Фильтрация по заголовку
+      problems.wherePropertyContain('title', 'title', title);
+    }
+
+    if (tags.length) { // Фильтрация по тэгам
+      problems.wherePropertyContain('Tags', 'multi_select', tags);
+    }
+
+    const { results } = await problems.query();
 
     return this._formatListResult(results as ProblemListResult);
   }

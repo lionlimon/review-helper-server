@@ -8,6 +8,6 @@ export default class ProblemController extends Controller {
   static async getProblems({ query: { title, tags } }: GetProblemsParameters, res: Response) {
     const result = await Problem.list({ title, tags });
 
-    res.json(this.prepareForJson(result));
+    res.json(ProblemController.prepareForJson(result));
   }
 }
