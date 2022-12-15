@@ -28,7 +28,6 @@ export default class GetDatabaseQuery {
     newFilterParams: T[K],
     operator = 'and' as K,
   ) {
-    console.log('mergim');
     const newFilter = { [operator]: [], ...this._filter } as T;
 
     newFilter[operator] = newFilter[operator]!
