@@ -1,4 +1,5 @@
 import {
+  GetDatabaseResponse,
   QueryDatabaseParameters,
 } from '@notionhq/client/build/src/api-endpoints';
 import { AddMissingProps } from '../../types/utils';
@@ -25,10 +26,31 @@ export type PropertyName = 'title' |
   'rollup';
 
 export type FilterParams = QueryDatabaseParameters['filter'];
-export type MergeFilterParams = Partial<
+
+/**
+ * Извлечённый тип значений свойств фильтра
+ */
+export type MergedFilterParams = Partial<
   Pick<AddMissingProps<FilterParams>, 'and' | 'or'>
 >
+
+/**
+ * Извлечённый тип элементов свойств фильтра and | or
+ */
 export type FilterParamsItem = Exclude<
-  MergeFilterParams['and' | 'or'],
+  MergedFilterParams['and' | 'or'],
   undefined
 >[number]
+
+/**
+ * Стандартные тэги будут присутствовать на всех наших таблицах
+ */
+export type GdrWithDefaultProperties = GetDatabaseResponse & {
+  properties: {
+    Tags: {
+      multi_select: {
+        options: {name: string}[]
+      }
+    },
+  }
+}

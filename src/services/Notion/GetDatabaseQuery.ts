@@ -2,14 +2,14 @@ import { Client, isNotionClientError } from '@notionhq/client';
 import {
   FilterParams,
   FilterParamsItem,
-  MergeFilterParams,
+  MergedFilterParams,
   PropertyName,
 } from './types';
 
 export default class GetDatabaseQuery {
   _notionClient: Client;
 
-  _filter = {} as FilterParams;
+  _filter = null as FilterParams | null;
 
   _databaseId: string;
 
@@ -22,13 +22,13 @@ export default class GetDatabaseQuery {
    * Изменяет переданный фильтр добавляя новые условия
    */
   _mergeFilters<
-    T extends MergeFilterParams,
+    T extends MergedFilterParams,
     K extends keyof T & 'and' | 'or'
   >(
     newFilterParams: T[K],
     operator = 'and' as K,
   ) {
-    const newFilter = { [operator]: [], ...this._filter } as T;
+    const newFilter = { [operator]: [], ...this._filter ?? {} } as T;
 
     newFilter[operator] = newFilter[operator]!
       .concat(newFilterParams as unknown as []);
@@ -40,7 +40,7 @@ export default class GetDatabaseQuery {
     try {
       return this._notionClient.databases.query({
         database_id: this._databaseId,
-        filter: this._filter,
+        ...(this._filter ? { filter: this._filter } : {}),
       });
     } catch (e: unknown) {
       if (isNotionClientError(e)) {
