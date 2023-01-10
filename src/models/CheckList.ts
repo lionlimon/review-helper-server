@@ -4,6 +4,7 @@ import {
   TextRichTextItemResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 import Notion from '../services/Notion';
+import { richTextToHtml } from '../services/Notion/utils';
 
 config();
 
@@ -49,8 +50,8 @@ export default class CheckList {
     return data.map((item) => ({
       id: item.id,
       title: item.properties.Name.title[0].text.content,
-      subTask: item.properties.subtask.rich_text[0].text.content,
-      explainText: item.properties.Message.rich_text[0].text.content,
+      subTask: item.properties.subtask.rich_text?.[0]?.text?.content,
+      explainText: richTextToHtml(item.properties.Message.rich_text),
     })) as CheckListItem[];
   }
 }
