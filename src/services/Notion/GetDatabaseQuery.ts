@@ -3,13 +3,15 @@ import {
   FilterParams,
   FilterParamsItem,
   MergedFilterParams,
-  PropertyName,
+  PropertyName, SortsParams,
 } from './types';
 
 export default class GetDatabaseQuery {
   _notionClient: Client;
 
   _filter = null as FilterParams | null;
+
+  _sorts = null as SortsParams | null;
 
   _databaseId: string;
 
@@ -41,6 +43,7 @@ export default class GetDatabaseQuery {
       return this._notionClient.databases.query({
         database_id: this._databaseId,
         ...(this._filter ? { filter: this._filter } : {}),
+        ...(this._sorts ? { sorts: this._sorts } : {}),
       });
     } catch (e: unknown) {
       if (isNotionClientError(e)) {
@@ -79,6 +82,15 @@ export default class GetDatabaseQuery {
         ? value.map(makeContainParam)
         : [makeContainParam(value)],
     );
+
+    return this;
+  }
+
+  sortBy(propertyName: string, direction: 'descending' | 'ascending') {
+    this._sorts = [
+      ...(this._sorts ? this._sorts : []),
+      { property: propertyName, direction },
+    ];
 
     return this;
   }

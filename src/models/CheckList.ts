@@ -11,7 +11,7 @@ config();
 const notion = new Notion(process.env.SECRET_TOKEN);
 
 export type CheckListListParams = { tag?: string };
-export type CheckListItem = Record<'id' | 'title' | 'subTask' | 'explainText', string>;
+export type CheckListItem = Record<'id' | 'title' | 'explainText', string> & { subTask: number };
 export type CheckListResult = (PageObjectResponse & {
   properties: {
     Name: {
@@ -23,7 +23,7 @@ export type CheckListResult = (PageObjectResponse & {
     },
 
     subtask: {
-      rich_text: TextRichTextItemResponse[]
+      number: number
     }
   }
 })[]
@@ -31,7 +31,8 @@ export type CheckListResult = (PageObjectResponse & {
 export default class CheckList {
   static async list({ tag = '' }: CheckListListParams = {}) {
     const checkList = notion.getDatabase(process.env.CHECK_LIST_DATABASE_ID)
-      .wherePropertyIsNotEmpty('Name', 'title');
+      .wherePropertyIsNotEmpty('Name', 'title')
+      .sortBy('subtask', 'ascending');
 
     if (tag) {
       checkList.wherePropertyContain('Tags', 'multi_select', tag);
@@ -50,7 +51,7 @@ export default class CheckList {
     return data.map((item) => ({
       id: item.id,
       title: item.properties.Name.title[0].text.content,
-      subTask: item.properties.subtask.rich_text?.[0]?.text?.content,
+      subTask: item.properties.subtask.number,
       explainText: richTextToHtml(item.properties.Message.rich_text),
     })) as CheckListItem[];
   }

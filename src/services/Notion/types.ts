@@ -26,6 +26,7 @@ export type PropertyName = 'title' |
   'rollup';
 
 export type FilterParams = QueryDatabaseParameters['filter'];
+export type SortsParams = QueryDatabaseParameters['sorts'];
 
 /**
  * Извлечённый тип значений свойств фильтра
