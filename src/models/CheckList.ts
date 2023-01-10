@@ -50,7 +50,8 @@ export default class CheckList {
   static _formatList(data: CheckListResult) {
     return data.map((item) => ({
       id: item.id,
-      title: item.properties.Name.title[0].text.content,
+      title: item.properties.Name.title
+        .reduce((text, curItem) => text + curItem.text.content, ''),
       subTask: item.properties.subtask.number,
       explainText: richTextToHtml(item.properties.Message.rich_text),
     })) as CheckListItem[];
