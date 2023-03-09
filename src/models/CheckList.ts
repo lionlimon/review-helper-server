@@ -11,7 +11,14 @@ config();
 const notion = new Notion(process.env.SECRET_TOKEN);
 
 export type CheckListListParams = { tag?: string };
-export type CheckListItem = Record<'id' | 'title' | 'explainText', string> & { subTask: number };
+export type CheckListItem = {
+  subTask: number,
+  id: string,
+  title: string,
+  explainText: string,
+  fullSubTask?: string,
+};
+
 export type CheckListResult = (PageObjectResponse & {
   properties: {
     Name: {
@@ -24,6 +31,10 @@ export type CheckListResult = (PageObjectResponse & {
 
     subtask: {
       number: number
+    },
+
+    Task: {
+      rich_text: TextRichTextItemResponse[],
     }
   }
 })[]
@@ -39,7 +50,6 @@ export default class CheckList {
     }
 
     const { results } = await checkList.query();
-
     return this._formatList(results as CheckListResult);
   }
 
@@ -54,6 +64,7 @@ export default class CheckList {
         .reduce((text, curItem) => text + curItem.text.content, ''),
       subTask: item.properties.subtask.number,
       explainText: richTextToHtml(item.properties.Message.rich_text),
+      fullSubTask: item.properties.Task ? richTextToHtml(item.properties.Task.rich_text) : null,
     })) as CheckListItem[];
   }
 }

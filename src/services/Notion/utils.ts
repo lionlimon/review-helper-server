@@ -6,7 +6,9 @@ import Html from '../../utils/Html';
  */
 export function richTextToHtml(content: TextRichTextItemResponse[]) {
   return content.reduce((result, item) => {
-    let text = item.text.content;
+    let text = item.text.content
+      .replace(/>/g, '&gt')
+      .replace(/</g, '&lt');
 
     const {
       bold, code, italic, strikethrough,
